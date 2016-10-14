@@ -220,6 +220,7 @@ decrypt (const std::string & resFile, const PublicKey & pub,
       }
 }
 
+
 inline void
 encrypt (const std::string & fileName, const PublicKey & pub,
 	 long long in_val)

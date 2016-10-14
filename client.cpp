@@ -83,7 +83,7 @@ setParam (int argc, char **argv)
 
 	    default:
 		fprintf (stderr,
-			 "Usage: %s [-d tmpfile_dir_path] [-k key_dir_path] -m master_server -c compute_server -p port_m -q port_c -i ID\n val1 val2 ...\n",
+			 "Usage: %s [-d tmpfile_dir_path] [-k key_dir_path] -m master_server -c compute_server -p port_m -q port_c -i ID -- val1 val2 ...\n",
 			 argv[0]);
 		exit (EXIT_FAILURE);
 	    }
@@ -91,7 +91,7 @@ setParam (int argc, char **argv)
     if (nopt != 5)
       {
 	fprintf (stderr,
-		 "Usage: %s [-d tmpfile_dir_path] [-k key_dir_path]  -m master_server -c compute_server -p port_m -q port_c -i ID\n val1 val2 ...\n",
+		 "Usage: %s [-d tmpfile_dir_path] [-k key_dir_path]  -m master_server -c compute_server -p port_m -q port_c -i ID -- val1 val2 ...\n",
 		   argv[0]);
 	exit (1);
       }
@@ -102,7 +102,7 @@ setParam (int argc, char **argv)
     if (argc != VAL_DIMENSION)
       {
 	fprintf (stderr,
-		 "Usage: %s [-d tmpfile_dir_path] [-k key_dir_path]  -m master_server -c compute_server -p port_m -q port_c -i ID\n val1 val2 ...",
+		 "Usage: %s [-d tmpfile_dir_path] [-k key_dir_path]  -m master_server -c compute_server -p port_m -q port_c -i ID -- val1 val2 ...",
 		   argv[0]);
 	exit (1);
       }
