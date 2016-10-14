@@ -12,6 +12,7 @@
 #define DBG_PRT(...)
 #endif
 
+#define VECTOR_DIMENSION 1 // ベクトルの次元
 
 double
 get_wall_time ()
@@ -140,10 +141,17 @@ main (int argc, char **argv)
 	  if ((result = decrypt (file, pub, prv)) == compute_server_ID)
 	    {
 		recvFile (sock, (char *) file.c_str ());
-		std::cout << "result from compute server: " << decrypt (file,
-									pub,
-									prv)
-		    << "\n";
+		  
+	        long long result[VECTOR_DIMENSION];
+		decrypt (file, pub, prv, result, VECTOR_DIMENSION);
+
+		std::cout << "result from compute server: ";
+		for (int i = 0; i < VECTOR_DIMENSION; i++)
+		  {
+		    std::cout << result[i] << ", ";
+		  }
+		std::cout << std::endl;
+		
 	    }
 	  else
 	    {

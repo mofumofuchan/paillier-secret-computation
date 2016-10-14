@@ -220,6 +220,61 @@ decrypt (const std::string & resFile, const PublicKey & pub,
       }
 }
 
+// overload: 
+inline void
+decrypt (const std::string & resFile, const PublicKey & pub,
+	 const PrivateKey & prv, long long* result, int dimension)
+{
+    std::ifstream ifs (resFile.c_str (), std::ios::binary);
+    if (!ifs)
+      {
+	  throw
+	  Exception () <<
+	      "can't open " <<
+	      resFile;
+      }
+    paillier_plaintext_t
+	zero;
+    mpz_init (zero.m);
+    paillier_plaintext_t *
+	two = paillier_plaintext_from_ui (2);
+    mpz_div (zero.m, pub.get ()->n, two->m);
+
+    std::vector< paillier_plaintext_t * > flag;
+    std::vector< paillier_ciphertext_t * > tmp_c;
+
+    for (int i = 0; i < dimension; i++) {
+      flag.push_back ( paillier_plaintext_from_ui (0));
+      tmp_c.push_back ( paillier_create_enc_zero ());
+    }
+
+    for (;;) // why infinite loop?
+      {
+	  std::string line;
+	  for (int i = 0; i < dimension; i++)
+	    {
+	      if (!(ifs >> line))
+		break;
+	      int
+		sign = 1;
+	      mpz_init_set_str (tmp_c[i]->c, line.c_str (), 16);
+	      paillier_dec (flag[i], const_cast < paillier_pubkey_t * >(pub.get ()),
+			    const_cast < paillier_prvkey_t * >(prv.get ()),
+			    tmp_c[i]);
+	      // Final output is reported as decimal number
+	      if (mpz_cmp (zero.m, flag[i]->m) < 0)
+		{
+		  mpz_sub (flag[i]->m, pub.get ()->n, flag[i]->m);
+		  sign = -1;
+		}
+	      
+	      result[i] = sign * atoll (mpz_get_str (NULL, 10, flag[i]->m));
+
+	    }
+	  return;
+      }
+}
+
 
 inline void
 encrypt (const std::string & fileName, const PublicKey & pub,

@@ -12,6 +12,8 @@
 #define DBG_PRT(...)
 #endif
 
+#define VECTOR_DIMENSION 1 // 足し算するベクトルの次元
+
 
 double
 get_wall_time ()
@@ -215,7 +217,7 @@ main (int argc, char **argv)
 
 		wts = get_wall_time ();
 
-		addall (fileNames, sumallfile, pub, 1);	// compute sum
+		addall (fileNames, sumallfile, pub, VECTOR_DIMENSION);	// compute sum
 
 		wte = get_wall_time ();
 		std::cerr << "Calc sum(Wall): " << wte - wts << "\n";
