@@ -1,2 +1,2 @@
-# paillier secret remote computationa
+# paillier secret remote computation
 
