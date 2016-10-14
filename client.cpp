@@ -28,9 +28,9 @@ int port_m;
 int port_c;
 std::string tmp_dir_path;
 std::string key_dir_path;
-#define VAL_DIM 3 
+#define VAL_DIMENSION 3 
 long long
-    val[VAL_DIM];
+    val[VAL_DIMENSION];
 int
     ID;
 
@@ -99,7 +99,7 @@ setParam (int argc, char **argv)
     argc -= optind;
     argv += optind;
 
-    if (argc != VAL_DIM)
+    if (argc != VAL_DIMENSION)
       {
 	fprintf (stderr,
 		 "Usage: %s [-d tmpfile_dir_path] [-k key_dir_path]  -m master_server -c compute_server -p port_m -q port_c -i ID\n val1 val2 ...",
@@ -107,11 +107,12 @@ setParam (int argc, char **argv)
 	exit (1);
       }
     
-    for (int i=0; i<VAL_DIM; i++)
+    for (int i=0; i<VAL_DIMENSION; i++)
       {
 	printf("val[%d]:%s\n", i, argv[i]); // debug
 	val[i] = atoll(argv[i]);
       }
+    
     return (0);
     
 }
@@ -160,7 +161,7 @@ main (int argc, char **argv)
 
     pub.load (publicKeyFile);
     file = tmp_dir_path + "c2s_ran";
-    encrypt (file, pub, val[0]); // TODO
+    encrypt (file, pub, val, VAL_DIMENSION);
     sentSize += sendFile (sock, (char *) file.c_str ());
 
     closeSock (sock2);

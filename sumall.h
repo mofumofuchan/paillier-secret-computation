@@ -226,32 +226,69 @@ encrypt (const std::string & fileName, const PublicKey & pub,
 {
     std::ofstream ofs (fileName.c_str (), std::ios::binary);
     if (!ofs)
-	throw
+      throw
 	Exception () <<
 	"can't open " <<
 	fileName;
 
     paillier_plaintext_t *
 	val;
+
     if (in_val < 0)
       {
-	  in_val *= -1;
-	  val = paillier_plaintext_from_ui (0);
-	  mpz_sub_ui (val->m, pub.get ()->n, in_val);
+	in_val *= -1;
+	val = paillier_plaintext_from_ui (0);
+	mpz_sub_ui (val->m, pub.get ()->n, in_val);
       }
     else
       {
-	  val = paillier_plaintext_from_ui (in_val);
+	val = paillier_plaintext_from_ui (in_val);
       }
     ofs << mpz_get_str (0, 16,
 			paillier_enc (NULL,
 				      const_cast <
-				      paillier_pubkey_t * >(pub.get ()), val,
-				      paillier_get_rand_devurandom)->c) <<
-	std::endl;
-
+				      paillier_pubkey_t * >(pub.get ()),
+				      val,
+				      paillier_get_rand_devurandom)->c)
+	<< std::endl;
 }
 
+// overload function: encrypt long long array
+inline void
+encrypt (const std::string & fileName, const PublicKey & pub,
+	 long long* in_val, int valDimension)
+{
+    std::ofstream ofs (fileName.c_str (), std::ios::binary);
+    if (!ofs)
+      throw
+	Exception () <<
+	"can't open " <<
+	fileName;
+
+    paillier_plaintext_t *
+	val;
+
+    for (int i=0; i<valDimension; i++) 
+      {
+	if (in_val[i] < 0)
+	  {
+	    in_val[i] *= -1;
+	    val = paillier_plaintext_from_ui (0);
+	    mpz_sub_ui (val->m, pub.get ()->n, in_val[i]);
+	  }
+	else
+	  {
+	    val = paillier_plaintext_from_ui (in_val[i]);
+	  }
+	ofs << mpz_get_str (0, 16,
+			    paillier_enc (NULL,
+					  const_cast <
+					  paillier_pubkey_t * >(pub.get ()),
+					  val,
+					  paillier_get_rand_devurandom)->c)
+	    << std::endl;
+      }
+}
 
 inline void
 addall (std::vector < std::string > fileNames, const std::string & oFileName,
