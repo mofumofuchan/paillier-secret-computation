@@ -215,7 +215,7 @@ main (int argc, char **argv)
 
 		wts = get_wall_time ();
 
-		addall (fileNames, sumallfile, pub);	// compute sum
+		addall (fileNames, sumallfile, pub, 1);	// compute sum
 
 		wte = get_wall_time ();
 		std::cerr << "Calc sum(Wall): " << wte - wts << "\n";
