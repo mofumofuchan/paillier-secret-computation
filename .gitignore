@@ -134,8 +134,13 @@ flycheck_*.el
 # projectiles files
 .projectile
 
-# binary file
+### Secure Computation (this program) ###
+# executable binary
 client
 server
 compute
 
+encresult
+
+# temporary files
+tmp/

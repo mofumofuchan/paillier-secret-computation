@@ -28,8 +28,9 @@ int port_m;
 int port_c;
 std::string tmp_dir_path;
 std::string key_dir_path;
+#define VAL_DIM 3 
 long long
-    val;
+    val[VAL_DIM];
 int
     ID;
 
@@ -43,7 +44,8 @@ setParam (int argc, char **argv)
     extern int optind; 
     tmp_dir_path = "";
     key_dir_path = "";
-    while ((opt = getopt (argc, argv, "m:c:p:q:d:k:v:i:")) != -1)
+    // while ((opt = getopt (argc, argv, "m:c:p:q:d:k:v:i:")) != -1)
+    while ((opt = getopt (argc, argv, "m:c:p:q:d:k:i:")) != -1)
       {
 	  switch (opt)
 	    {
@@ -70,10 +72,10 @@ setParam (int argc, char **argv)
 	    case 'k':
 		key_dir_path = optarg;
 		break;
-	    case 'v':
-		nopt++;
-		val = atoll (optarg);
-		break;
+	    // case 'v':
+	    // 	nopt++;
+	    // 	val = atoll (optarg);
+	    // 	break;
 	    case 'i':
 		nopt++;
 		ID = atoi (optarg);
@@ -81,32 +83,36 @@ setParam (int argc, char **argv)
 
 	    default:
 		fprintf (stderr,
-			 "Usage: %s [-d tmpfile_dir_path] [-k key_dir_path] -m master_server -c compute_server -p port_m -q port_c -v value -i ID\n",
+			 "Usage: %s [-d tmpfile_dir_path] [-k key_dir_path] -m master_server -c compute_server -p port_m -q port_c -i ID\n val1 val2 ...\n",
 			 argv[0]);
 		exit (EXIT_FAILURE);
 	    }
       }
-    if (nopt == 6)
+    if (nopt != 5)
       {
-	  return (0);
-      }
-    else
-      {
-	  fprintf (stderr,
-		   "Usage: %s [-d tmpfile_dir_path] [-k key_dir_path]  -m master_server -c compute_server -p port_m -q port_c -v value\n -i ID\n",
+	fprintf (stderr,
+		 "Usage: %s [-d tmpfile_dir_path] [-k key_dir_path]  -m master_server -c compute_server -p port_m -q port_c -i ID\n val1 val2 ...\n",
 		   argv[0]);
-	  exit (1);
+	exit (1);
       }
 
     argc -= optind;
     argv += optind;
 
-    printf("Argment 1 = %s\n", argv[0]);
-    printf("Argment 2 = %s\n", argv[1]);
-
-    // 一時停止
-    int tmp;
-    scanf("%d", &tmp);
+    if (argc != VAL_DIM)
+      {
+	fprintf (stderr,
+		 "Usage: %s [-d tmpfile_dir_path] [-k key_dir_path]  -m master_server -c compute_server -p port_m -q port_c -i ID\n val1 val2 ...",
+		   argv[0]);
+	exit (1);
+      }
+    
+    for (int i=0; i<VAL_DIM; i++)
+      {
+	printf("val[%d]:%s\n", i, argv[i]); // debug
+	val[i] = atoll(argv[i]);
+      }
+    return (0);
     
 }
 
@@ -154,7 +160,7 @@ main (int argc, char **argv)
 
     pub.load (publicKeyFile);
     file = tmp_dir_path + "c2s_ran";
-    encrypt (file, pub, val);
+    encrypt (file, pub, val[0]); // TODO
     sentSize += sendFile (sock, (char *) file.c_str ());
 
     closeSock (sock2);
