@@ -12,7 +12,7 @@
 #define DBG_PRT(...)
 #endif
 
-#define VECTOR_DIMENSION 1 // 足し算するベクトルの次元
+#define VECTOR_DIMENSION 3 // 足し算するベクトルの次元
 
 
 double

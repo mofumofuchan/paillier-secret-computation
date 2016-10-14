@@ -12,7 +12,7 @@
 #define DBG_PRT(...)
 #endif
 
-#define VECTOR_DIMENSION 1 // ベクトルの次元
+#define VECTOR_DIMENSION 3 // ベクトルの次元
 
 double
 get_wall_time ()

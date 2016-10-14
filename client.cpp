@@ -28,9 +28,11 @@ int port_m;
 int port_c;
 std::string tmp_dir_path;
 std::string key_dir_path;
-#define VAL_DIMENSION 3 
+
+#define VECTOR_DIMENSION 3 // ベクトルの次元
+
 long long
-    val[VAL_DIMENSION];
+    val[VECTOR_DIMENSION];
 int
     ID;
 
@@ -99,7 +101,7 @@ setParam (int argc, char **argv)
     argc -= optind;
     argv += optind;
 
-    if (argc != VAL_DIMENSION)
+    if (argc != VECTOR_DIMENSION)
       {
 	fprintf (stderr,
 		 "Usage: %s [-d tmpfile_dir_path] [-k key_dir_path]  -m master_server -c compute_server -p port_m -q port_c -i ID -- val1 val2 ...",
@@ -107,7 +109,7 @@ setParam (int argc, char **argv)
 	exit (1);
       }
     
-    for (int i=0; i<VAL_DIMENSION; i++)
+    for (int i=0; i<VECTOR_DIMENSION; i++)
       {
 	printf("val[%d]:%s\n", i, argv[i]); // debug
 	val[i] = atoll(argv[i]);
@@ -161,7 +163,7 @@ main (int argc, char **argv)
 
     pub.load (publicKeyFile);
     file = tmp_dir_path + "c2s_ran";
-    encrypt (file, pub, val, VAL_DIMENSION);
+    encrypt (file, pub, val, VECTOR_DIMENSION);
     sentSize += sendFile (sock, (char *) file.c_str ());
 
     closeSock (sock2);
