@@ -40,6 +40,7 @@ setParam (int argc, char **argv)
 	opt;
     int
 	nopt = 0;
+    extern int optind; 
     tmp_dir_path = "";
     key_dir_path = "";
     while ((opt = getopt (argc, argv, "m:c:p:q:d:k:v:i:")) != -1)
@@ -49,7 +50,7 @@ setParam (int argc, char **argv)
 	    case 'm':
 		nopt++;
 		host_m = optarg;
-		break;
+		break;   
 	    case 'c':
 		nopt++;
 		host_c = optarg;
@@ -92,10 +93,21 @@ setParam (int argc, char **argv)
     else
       {
 	  fprintf (stderr,
-		   "Usage: %s [-d tmpfile_dir_path] [-k key_dir_path]  -m master_server -c compute_server -p port_m -q port_c -v value\n -i ID",
+		   "Usage: %s [-d tmpfile_dir_path] [-k key_dir_path]  -m master_server -c compute_server -p port_m -q port_c -v value\n -i ID\n",
 		   argv[0]);
 	  exit (1);
       }
+
+    argc -= optind;
+    argv += optind;
+
+    printf("Argment 1 = %s\n", argv[0]);
+    printf("Argment 2 = %s\n", argv[1]);
+
+    // 一時停止
+    int tmp;
+    scanf("%d", &tmp);
+    
 }
 
 int
