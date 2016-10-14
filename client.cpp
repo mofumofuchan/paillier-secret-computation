@@ -46,7 +46,6 @@ setParam (int argc, char **argv)
     extern int optind; 
     tmp_dir_path = "";
     key_dir_path = "";
-    // while ((opt = getopt (argc, argv, "m:c:p:q:d:k:v:i:")) != -1)
     while ((opt = getopt (argc, argv, "m:c:p:q:d:k:i:")) != -1)
       {
 	  switch (opt)
@@ -74,10 +73,6 @@ setParam (int argc, char **argv)
 	    case 'k':
 		key_dir_path = optarg;
 		break;
-	    // case 'v':
-	    // 	nopt++;
-	    // 	val = atoll (optarg);
-	    // 	break;
 	    case 'i':
 		nopt++;
 		ID = atoi (optarg);
@@ -111,7 +106,6 @@ setParam (int argc, char **argv)
     
     for (int i=0; i<VECTOR_DIMENSION; i++)
       {
-	printf("val[%d]:%s\n", i, argv[i]); // debug
 	val[i] = atoll(argv[i]);
       }
     
