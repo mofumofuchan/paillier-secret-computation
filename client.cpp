@@ -28,8 +28,11 @@ int port_m;
 int port_c;
 std::string tmp_dir_path;
 std::string key_dir_path;
+
+#define VECTOR_DIMENSION 3 // ベクトルの次元
+
 long long
-    val;
+    val[VECTOR_DIMENSION];
 int
     ID;
 
@@ -40,16 +43,18 @@ setParam (int argc, char **argv)
 	opt;
     int
 	nopt = 0;
+    extern int optind; 
     tmp_dir_path = "";
     key_dir_path = "";
-    while ((opt = getopt (argc, argv, "m:c:p:q:d:k:v:i:")) != -1)
+    // while ((opt = getopt (argc, argv, "m:c:p:q:d:k:v:i:")) != -1)
+    while ((opt = getopt (argc, argv, "m:c:p:q:d:k:i:")) != -1)
       {
 	  switch (opt)
 	    {
 	    case 'm':
 		nopt++;
 		host_m = optarg;
-		break;
+		break;   
 	    case 'c':
 		nopt++;
 		host_c = optarg;
@@ -69,10 +74,10 @@ setParam (int argc, char **argv)
 	    case 'k':
 		key_dir_path = optarg;
 		break;
-	    case 'v':
-		nopt++;
-		val = atoll (optarg);
-		break;
+	    // case 'v':
+	    // 	nopt++;
+	    // 	val = atoll (optarg);
+	    // 	break;
 	    case 'i':
 		nopt++;
 		ID = atoi (optarg);
@@ -80,22 +85,38 @@ setParam (int argc, char **argv)
 
 	    default:
 		fprintf (stderr,
-			 "Usage: %s [-d tmpfile_dir_path] [-k key_dir_path] -m master_server -c compute_server -p port_m -q port_c -v value -i ID\n",
+			 "Usage: %s [-d tmpfile_dir_path] [-k key_dir_path] -m master_server -c compute_server -p port_m -q port_c -i ID -- val1 val2 ...\n",
 			 argv[0]);
 		exit (EXIT_FAILURE);
 	    }
       }
-    if (nopt == 6)
+    if (nopt != 5)
       {
-	  return (0);
-      }
-    else
-      {
-	  fprintf (stderr,
-		   "Usage: %s [-d tmpfile_dir_path] [-k key_dir_path]  -m master_server -c compute_server -p port_m -q port_c -v value\n -i ID",
+	fprintf (stderr,
+		 "Usage: %s [-d tmpfile_dir_path] [-k key_dir_path]  -m master_server -c compute_server -p port_m -q port_c -i ID -- val1 val2 ...\n",
 		   argv[0]);
-	  exit (1);
+	exit (1);
       }
+
+    argc -= optind;
+    argv += optind;
+
+    if (argc != VECTOR_DIMENSION)
+      {
+	fprintf (stderr,
+		 "Usage: %s [-d tmpfile_dir_path] [-k key_dir_path]  -m master_server -c compute_server -p port_m -q port_c -i ID -- val1 val2 ...",
+		   argv[0]);
+	exit (1);
+      }
+    
+    for (int i=0; i<VECTOR_DIMENSION; i++)
+      {
+	printf("val[%d]:%s\n", i, argv[i]); // debug
+	val[i] = atoll(argv[i]);
+      }
+    
+    return (0);
+    
 }
 
 int
@@ -142,7 +163,7 @@ main (int argc, char **argv)
 
     pub.load (publicKeyFile);
     file = tmp_dir_path + "c2s_ran";
-    encrypt (file, pub, val);
+    encrypt (file, pub, val, VECTOR_DIMENSION);
     sentSize += sendFile (sock, (char *) file.c_str ());
 
     closeSock (sock2);

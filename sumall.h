@@ -220,50 +220,146 @@ decrypt (const std::string & resFile, const PublicKey & pub,
       }
 }
 
+// overload: 
+inline void
+decrypt (const std::string & resFile, const PublicKey & pub,
+	 const PrivateKey & prv, long long* result, int dimension)
+{
+    std::ifstream ifs (resFile.c_str (), std::ios::binary);
+    if (!ifs)
+      {
+	  throw
+	  Exception () <<
+	      "can't open " <<
+	      resFile;
+      }
+    paillier_plaintext_t
+	zero;
+    mpz_init (zero.m);
+    paillier_plaintext_t *
+	two = paillier_plaintext_from_ui (2);
+    mpz_div (zero.m, pub.get ()->n, two->m);
+
+    std::vector< paillier_plaintext_t * > flag;
+    std::vector< paillier_ciphertext_t * > tmp_c;
+
+    for (int i = 0; i < dimension; i++) {
+      flag.push_back ( paillier_plaintext_from_ui (0));
+      tmp_c.push_back ( paillier_create_enc_zero ());
+    }
+
+    for (;;) // why infinite loop?
+      {
+	  std::string line;
+	  for (int i = 0; i < dimension; i++)
+	    {
+	      if (!(ifs >> line))
+		break;
+	      int
+		sign = 1;
+	      mpz_init_set_str (tmp_c[i]->c, line.c_str (), 16);
+	      paillier_dec (flag[i], const_cast < paillier_pubkey_t * >(pub.get ()),
+			    const_cast < paillier_prvkey_t * >(prv.get ()),
+			    tmp_c[i]);
+	      // Final output is reported as decimal number
+	      if (mpz_cmp (zero.m, flag[i]->m) < 0)
+		{
+		  mpz_sub (flag[i]->m, pub.get ()->n, flag[i]->m);
+		  sign = -1;
+		}
+	      
+	      result[i] = sign * atoll (mpz_get_str (NULL, 10, flag[i]->m));
+
+	    }
+	  return;
+      }
+}
+
+
 inline void
 encrypt (const std::string & fileName, const PublicKey & pub,
 	 long long in_val)
 {
     std::ofstream ofs (fileName.c_str (), std::ios::binary);
     if (!ofs)
-	throw
+      throw
 	Exception () <<
 	"can't open " <<
 	fileName;
 
     paillier_plaintext_t *
 	val;
+
     if (in_val < 0)
       {
-	  in_val *= -1;
-	  val = paillier_plaintext_from_ui (0);
-	  mpz_sub_ui (val->m, pub.get ()->n, in_val);
+	in_val *= -1;
+	val = paillier_plaintext_from_ui (0);
+	mpz_sub_ui (val->m, pub.get ()->n, in_val);
       }
     else
       {
-	  val = paillier_plaintext_from_ui (in_val);
+	val = paillier_plaintext_from_ui (in_val);
       }
     ofs << mpz_get_str (0, 16,
 			paillier_enc (NULL,
 				      const_cast <
-				      paillier_pubkey_t * >(pub.get ()), val,
-				      paillier_get_rand_devurandom)->c) <<
-	std::endl;
-
+				      paillier_pubkey_t * >(pub.get ()),
+				      val,
+				      paillier_get_rand_devurandom)->c)
+	<< std::endl;
 }
 
+// overload function: encrypt long long array
+inline void
+encrypt (const std::string & fileName, const PublicKey & pub,
+	 long long* in_val, int valDimension)
+{
+    std::ofstream ofs (fileName.c_str (), std::ios::binary);
+    if (!ofs)
+      throw
+	Exception () <<
+	"can't open " <<
+	fileName;
+
+    paillier_plaintext_t *
+	val;
+
+    for (int i=0; i<valDimension; i++) 
+      {
+	if (in_val[i] < 0)
+	  {
+	    in_val[i] *= -1;
+	    val = paillier_plaintext_from_ui (0);
+	    mpz_sub_ui (val->m, pub.get ()->n, in_val[i]);
+	  }
+	else
+	  {
+	    val = paillier_plaintext_from_ui (in_val[i]);
+	  }
+	ofs << mpz_get_str (0, 16,
+			    paillier_enc (NULL,
+					  const_cast <
+					  paillier_pubkey_t * >(pub.get ()),
+					  val,
+					  paillier_get_rand_devurandom)->c)
+	    << std::endl;
+      }
+}
 
 inline void
 addall (std::vector < std::string > fileNames, const std::string & oFileName,
-	const PublicKey & pub)
+	const PublicKey & pub, int dimension)
 {
-    paillier_ciphertext_t *
-	tmp_c = paillier_create_enc_zero ();
-    paillier_ciphertext_t *
-	all = paillier_create_enc_zero ();
+    std::vector < paillier_ciphertext_t * > tmp_c;
+    std::vector < paillier_ciphertext_t * > all;
     paillier_pubkey_t *
 	pkey = const_cast < paillier_pubkey_t * >(pub.get ());
 
+    for (int i = 0; i < dimension; i++) {
+      tmp_c.push_back (paillier_create_enc_zero ());
+      all.push_back (paillier_create_enc_zero ());
+    }
+    
 
     for (int i = 0; i < (int) fileNames.size (); i++)
       {
@@ -274,10 +370,13 @@ addall (std::vector < std::string > fileNames, const std::string & oFileName,
 	      "can't open " <<
 	      fileNames[i];
 	  std::string line;
-	  if (!(ifs >> line))
-	      break;
-	  mpz_init_set_str (tmp_c->c, line.c_str (), 16);
-	  paillier_mul (pkey, all, all, tmp_c);
+	  for (int j = 0; j < dimension; j++)
+	    {
+	      if (!(ifs >> line))
+		break;
+	      mpz_init_set_str (tmp_c[j]->c, line.c_str (), 16);
+	      paillier_mul (pkey, all[j], all[j], tmp_c[j]);
+	    }
       }
 
     std::ofstream ofs (oFileName.c_str (), std::ios::binary);
@@ -287,6 +386,7 @@ addall (std::vector < std::string > fileNames, const std::string & oFileName,
 	"can't open " <<
 	oFileName;
 
-    ofs << mpz_get_str (0, 16, all->c) << std::endl;
+    for (int i = 0; i < dimension; i++) 
+      ofs << mpz_get_str (0, 16, all[i]->c) << std::endl;
 
 }
