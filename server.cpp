@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 Kana Shimizu */
+/* Copyright (c) 2016 Kana Shimizu and Yusuke Okimoto */
 #include "sumall.h"
 #include "comm.h"
 #include<sys/time.h>
@@ -11,8 +11,6 @@
 #else
 #define DBG_PRT(...)
 #endif
-
-#define VECTOR_DIMENSION 3 // ベクトルの次元
 
 double
 get_wall_time ()

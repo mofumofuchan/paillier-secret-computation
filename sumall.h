@@ -1,5 +1,5 @@
 #pragma once
-/* Copyright (c) 2016 Kana Shimizu */
+/* Copyright (c) 2016 Kana Shimizu and Yusuke Okimoto */
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
@@ -17,6 +17,8 @@ extern "C"
 {
 #include "paillier.h"
 }
+
+#define VECTOR_DIMENSION 3
 
 struct Exception:
     std::exception
