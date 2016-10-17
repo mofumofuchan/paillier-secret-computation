@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 Kana Shimizu */
+/* Copyright (c) 2016 Kana Shimizu and Yusuke Okimoto */
 #include "sumall.h"
 #include "comm.h"
 #include<sys/time.h>
@@ -28,8 +28,6 @@ int port_m;
 int port_c;
 std::string tmp_dir_path;
 std::string key_dir_path;
-
-#define VECTOR_DIMENSION 3 // ベクトルの次元
 
 long long
     val[VECTOR_DIMENSION];
